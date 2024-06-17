@@ -158,11 +158,27 @@ int main() {
     uint32_t PS_DDR_array[BRAM_DEPTH*BRAM_WIDTH/4];
     uint32_t * DDR_buf0 = (uint32_t *)TX_BUFFER_BASE ;
     uint32_t * DDR_buf1 = (uint32_t *)RX_BUFFER_BASE ;
+
     for(int i=0; i <BRAM_DEPTH*BRAM_WIDTH/4;i++ ){
-		DDR_buf0[i] = random();
-        PS_DDR_array[i] = DDR_buf0[i];
+        PS_DDR_array[i] = random();
 	}
 
+    // auto start_PS2PL = std::chrono::steady_clock::now();
+    // memcpy(DDR_buf0, PS_DDR_array, BRAM_DEPTH*BRAM_WIDTH);
+    // //sometime memcpy may have bus error, so don't use this in real project.
+    // auto end_PS2PL = std::chrono::steady_clock::now();
+    // duration = std::chrono::duration_cast<std::chrono::microseconds>(end_PS2PL - start_PS2PL);
+    // std::cout << "PS2PL time: " << duration.count() << " us\n";
+    // time difference of memcpy and for loop is very little
+    
+    auto start_PS2PL = std::chrono::steady_clock::now();
+    for(int i=0; i <BRAM_DEPTH*BRAM_WIDTH/4;i++ ){
+		DDR_buf0[i] = PS_DDR_array[i];
+	}
+    auto end_PS2PL = std::chrono::steady_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end_PS2PL - start_PS2PL);
+    std::cout << "PS2PL time: " << duration.count() << " us\n";
+    
     auto start_TX = std::chrono::steady_clock::now();
 	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_RADDR_OFFSET), (uint32_t)((uint64_t)DDR_buf0 -(uint64_t)mem_map_base));
 	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_RSIZE_OFFSET), BRAM_DEPTH);
