@@ -20,3 +20,5 @@ clean:
 
 # Phony targets
 .PHONY: main clean
+
+download_bitfile: ; /usr/local/share/pynq-venv/bin/python download_bitfile.py
