@@ -1,5 +1,5 @@
 # zcu104_test_pl_ddr
-test PL DDR; run in C++; self defined memory controller for PL DDR; vivado 2022.1.  
+test PL DDR; run in C++; self defined memory controller for PL DDR; vivado 2022.1.  The whole system runs on Linux system.
 
 cDMA: custom DMA, changed from FDMA. simple shake hand channel <=> cDMA <=> AXI Master channel.  
 
