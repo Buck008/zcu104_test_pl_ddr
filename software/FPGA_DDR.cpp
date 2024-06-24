@@ -37,6 +37,10 @@ void *FPGA_DDR_malloc(unsigned int numbytes)
 					new_mcb.available=1;
 					new_mcb.blocksize=mcb[current_mcb_num].blocksize-numbytes;
 					new_mcb.pl_DDR_address=mcb[current_mcb_num].pl_DDR_address+numbytes;
+					if(new_mcb.pl_DDR_address >= FPGA_DDR_SIZE)
+					{
+						printf("PL DDR OVERFLOW!!!\n");
+					}
 					mcb.insert(mcb.begin()+current_mcb_num+1,new_mcb);
 				}
 				mcb[current_mcb_num].blocksize=numbytes;
@@ -62,7 +66,7 @@ void FPGA_DDR_free(void *mcb_base_addr)
 		}
 	}
 	mcb[current_mcb_num].available=1;
-	//If the latter block is also free, merge the latter block
+	//If the next block is also free, merge the latter block
 	if(current_mcb_num!=mcb.size()-1)
 	{
 		if(mcb[current_mcb_num+1].available)
