@@ -10,6 +10,7 @@
 #define BRAM_DEPTH 0x4000
 #define BRAM_WIDTH 16 //16byte
 //0x4000 * 16B = 256KB
+#define FPGA_DDR_DATA_LOOP_BIAS_ADDR 0x00000000
 #define CDMA_WADDR_OFFSET 0
 #define CDMA_WADDR_VLD_OFFSET 4
 #define CDMA_WSIZE_OFFSET 8
@@ -180,7 +181,7 @@ int main() {
     std::cout << "PS2PL time: " << duration.count() << " us\n";
     
     auto start_TX = std::chrono::steady_clock::now();
-	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_RADDR_OFFSET), (uint32_t)((uint64_t)DDR_buf0 -(uint64_t)mem_map_base));
+	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_RADDR_OFFSET), (uint32_t)((uint64_t)DDR_buf0 -(uint64_t)mem_map_base + FPGA_DDR_DATA_LOOP_BIAS_ADDR));
 	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_RSIZE_OFFSET), BRAM_DEPTH);
 	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_RADDR_VLD_OFFSET), 1);
 	while( FPGA_read32((void *)((uint64_t)data_loop_map_base+CDMA_RBUSY_OFFSET))
@@ -196,7 +197,7 @@ int main() {
 
     printf("Start RX\n");
     auto start_RX = std::chrono::steady_clock::now();
-	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_WADDR_OFFSET), (uint32_t)((uint64_t)DDR_buf1 -(uint64_t)mem_map_base));
+	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_WADDR_OFFSET), (uint32_t)((uint64_t)DDR_buf1 -(uint64_t)mem_map_base + FPGA_DDR_DATA_LOOP_BIAS_ADDR));
 	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_WSIZE_OFFSET), BRAM_DEPTH);
 	FPGA_write32((void *)((uint64_t)data_loop_map_base+CDMA_WADDR_VLD_OFFSET), 1);
 	while(
